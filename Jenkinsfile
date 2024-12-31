@@ -1,17 +1,16 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18-alpine'
+            reuseNode true
+        }
+    }
     environment {
         NETLIFY_SITE_ID = 'fac37fa6-2a17-467d-9be4-149762637145'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
     }
     stages {
         stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
             steps {
                 sh '''
                     ls -la
@@ -25,12 +24,6 @@ pipeline {
         }
 
         stage('Test'){
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
             steps{
                 sh '''
                     test -f build/index.html
@@ -40,12 +33,6 @@ pipeline {
         }
 
         stage('Deploy') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
             steps {
                 sh '''
                     npm install netlify-cli

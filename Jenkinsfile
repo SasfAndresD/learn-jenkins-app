@@ -40,7 +40,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    npm install -g vercel
+                    npm install vercel
                     vercel --version
                     if [ ! -f vercel.json ]; then
                         echo '{

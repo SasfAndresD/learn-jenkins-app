@@ -41,6 +41,7 @@ pipeline {
             steps {
                 sh '''
                     npm install vercel
+                    node_modules/.bin/vercel --version
                     if [ ! -f vercel.json ]; then
                         echo '{
                             "version": 2,
@@ -56,7 +57,7 @@ pipeline {
                             ]
                         }' > vercel.json
                     fi
-                    vercel deploy build \
+                    node_modules/.bin/vercel deploy build \
                         --token ${VERCEL_TOKEN} \
                         --prod \
                         --yes \

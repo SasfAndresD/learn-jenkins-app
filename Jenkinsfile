@@ -41,7 +41,6 @@ pipeline {
             steps {
                 sh '''
                     npm install vercel
-                    node_modules/.bin/vercel --version
                     if [ ! -f vercel.json ]; then
                         echo '{
                             "version": 2,

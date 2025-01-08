@@ -63,7 +63,7 @@ pipeline {
                         --prod \
                         --yes \
                         --scope ${VERCEL_ORG_ID} \
-                        --project-id ${VERCEL_PROJECT_ID}
+                        --name ${VERCEL_PROJECT_ID}
 
                     echo 'Fin del deploy'
                 '''

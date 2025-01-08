@@ -9,8 +9,9 @@ pipeline {
         githubPush()
     }
     environment {
-        NETLIFY_SITE_ID = '08a9c4a9-a56d-4b12-97d5-38e16d9d3b5a'
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+        VERCEL_TOKEN = credentials('vercel-token')
+        VERCEL_ORG_ID = 'andres-projects-8af9364a'
+        VERCEL_PROJECT_ID = 'prj_gLVGXXCgYnBDJEh0KbS4dSLAkepU'
         NODE_TLS_REJECT_UNAUTHORIZED = '0'
     }
     stages {
@@ -27,25 +28,36 @@ pipeline {
             }
         }
 
-            stage('Test'){
-                steps{
-                    sh '''
-                        test -f build/index.html
-                        npm test 
-                    '''
-                }
+        stage('Test'){
+            steps{
+                sh '''
+                    test -f build/index.html
+                    npm test
+                '''
             }
+        }
 
         stage('Deploy') {
             steps {
                 sh '''
-                    npm install netlify-cli
-                    node_modules/.bin/netlify --version
-                    echo "Deploying to production: Site ID: $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
-                    echo 'End of deploy'
+                    npm install vercel
+                    node_modules/.bin/vercel --version
+                    vercel deploy build \
+                        --token ${VERCEL_TOKEN} \
+                        --prod \
+                        --yes \
+                        --scope ${VERCEL_ORG_ID} \
+                        --project-id ${VERCEL_PROJECT_ID}
+                    
+                    echo 'Fin del deploy'
                 '''
+            }
+        }
+        stage('Verificar Deployment') {
+            steps {
+                sleep 5
+
+                sh 'curl https://${VERCEL_PROJECT_ID}.vercel.app'
             }
         }
     }
@@ -53,6 +65,9 @@ pipeline {
     post {
         always {
             junit 'test-results/junit.xml'
+        }
+        cleanup {
+            cleanWs()
         }
     }
 }

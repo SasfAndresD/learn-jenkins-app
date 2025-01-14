@@ -9,6 +9,6 @@ test('renders learn Jenkins link', () => {
 
 test('see 8 number in the screen', () => {
   render(<App />);
-  const numberElement = screen.getByText(/8/i);
+  const numberElement = screen.getByText(/9/i);
   expect(numberElement).toBeInTheDocument();
 })

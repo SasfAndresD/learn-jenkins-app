@@ -5,20 +5,20 @@ pipeline {
             reuseNode true
         }
     }
-
+    
     triggers {
         githubPush()
     }
-
+    
     environment {
         NETLIFY_SITE_ID = '08a9c4a9-a56d-4b12-97d5-38e16d9d3b5a'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
         NODE_TLS_REJECT_UNAUTHORIZED = '0'
         NEW_RELIC_LICENSE_KEY = credentials('new-relic-license-key')
-        NEW_RELIC_APP_NAME = 'jenkins-class'
+        NEW_RELIC_APP_NAME = 'Tu-Aplicacion'
         NODE_ENV = 'production'
     }
-
+    
     stages {
         stage('Install Dependencies') {
             steps {
@@ -29,7 +29,7 @@ pipeline {
                 '''
             }
         }
-
+        
         stage('New Relic Setup') {
             steps {
                 sh '''
@@ -37,25 +37,25 @@ pipeline {
                     if [ ! -f newrelic.js ]; then
                         echo "Creando configuración de New Relic..."
                         # Crear archivo de configuración con la licencia desde las variables de entorno
-                        cat > newrelic.js << EOL
-                        'use strict'
-                        exports.config = {
-                            app_name: ['${NEW_RELIC_APP_NAME}'],
-                            license_key: '${NEW_RELIC_LICENSE_KEY}',
-                            logging: {
-                                level: 'info'
-                            },
-                            distributed_tracing: {
-                                enabled: true
-                            },
-                            allow_all_headers: true
-                        }
-                        EOL
+                        cat > newrelic.js << 'EOL'
+'use strict'
+exports.config = {
+    app_name: ['${NEW_RELIC_APP_NAME}'],
+    license_key: '${NEW_RELIC_LICENSE_KEY}',
+    logging: {
+        level: 'info'
+    },
+    distributed_tracing: {
+        enabled: true
+    },
+    allow_all_headers: true
+}
+EOL
                     fi
                 '''
             }
         }
-
+        
         stage('Build') {
             steps {
                 sh '''
@@ -64,7 +64,7 @@ pipeline {
                 '''
             }
         }
-
+        
         stage('Test') {
             steps {
                 sh '''
@@ -73,7 +73,7 @@ pipeline {
                 '''
             }
         }
-
+        
         stage('Deploy') {
             steps {
                 sh '''
@@ -87,7 +87,7 @@ pipeline {
             }
         }
     }
-
+    
     post {
         always {
             junit 'test-results/junit.xml'

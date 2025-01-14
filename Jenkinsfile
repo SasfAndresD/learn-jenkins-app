@@ -12,6 +12,8 @@ pipeline {
         NETLIFY_SITE_ID = '08a9c4a9-a56d-4b12-97d5-38e16d9d3b5a'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
         NODE_TLS_REJECT_UNAUTHORIZED = '0'
+        NEW_RELIC_LICENSE_KEY = credentials('B805FB6D024C228511C67D7F0EBA7DBB59B146F071621253487880FE420A90FB')
+        NEW_RELIC_APP_NAME = 'jenkins-class'
     }
     stages {
         stage('Build') {
@@ -32,6 +34,19 @@ pipeline {
                 sh '''
                     test -f build/index.html
                     npm test 
+                '''
+            }
+        }
+
+        stage('Notify New Relic') {
+            steps {
+                sh '''
+                    npm install newrelic-cli
+                    newrelic deployments create \
+                    --applicationName $NEW_RELIC_APP_NAME \
+                    --user $(git config user.name) \
+                    --revision $(git rev-parse HEAD) \
+                    --description "Deploy desde Jenkins"
                 '''
             }
         }
